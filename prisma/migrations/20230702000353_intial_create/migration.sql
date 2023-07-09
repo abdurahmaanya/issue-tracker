@@ -1,0 +1,148 @@
+-- CreateEnum
+CREATE TYPE "IssueType" AS ENUM ('Bug', 'Task');
+
+-- CreateEnum
+CREATE TYPE "Status" AS ENUM ('TODO', 'INPROGRESS', 'DONE');
+
+-- CreateTable
+CREATE TABLE "Example" (
+    "id" STRING NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Example_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Account" (
+    "id" STRING NOT NULL,
+    "userId" STRING NOT NULL,
+    "type" STRING NOT NULL,
+    "provider" STRING NOT NULL,
+    "providerAccountId" STRING NOT NULL,
+    "refresh_token" STRING,
+    "access_token" STRING,
+    "expires_at" INT4,
+    "token_type" STRING,
+    "scope" STRING,
+    "id_token" STRING,
+    "session_state" STRING,
+
+    CONSTRAINT "Account_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Session" (
+    "id" STRING NOT NULL,
+    "sessionToken" STRING NOT NULL,
+    "userId" STRING NOT NULL,
+    "expires" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Session_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "User" (
+    "id" STRING NOT NULL,
+    "name" STRING,
+    "email" STRING,
+    "emailVerified" TIMESTAMP(3),
+    "image" STRING,
+
+    CONSTRAINT "User_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Team" (
+    "id" INT8 NOT NULL DEFAULT unique_rowid(),
+    "name" STRING NOT NULL,
+    "leadMemberId" STRING NOT NULL,
+
+    CONSTRAINT "Team_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Project" (
+    "id" INT8 NOT NULL DEFAULT unique_rowid(),
+    "name" STRING NOT NULL,
+    "isPersonal" BOOL NOT NULL DEFAULT true,
+    "teamId" INT8,
+    "ownerId" STRING NOT NULL,
+
+    CONSTRAINT "Project_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Sprint" (
+    "id" INT8 NOT NULL DEFAULT unique_rowid(),
+    "startsAt" TIMESTAMP(3),
+    "finishesAt" TIMESTAMP(3),
+    "goal" STRING,
+    "projectId" INT8 NOT NULL,
+    "status" "Status" NOT NULL,
+
+    CONSTRAINT "Sprint_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Issue" (
+    "id" INT8 NOT NULL DEFAULT unique_rowid(),
+    "title" STRING NOT NULL,
+    "issueType" "IssueType" NOT NULL,
+    "description" STRING,
+    "assignee" STRING,
+    "projectId" INT8 NOT NULL,
+    "sprintId" INT8,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3),
+    "closedAt" TIMESTAMP(3),
+    "status" "Status" NOT NULL,
+
+    CONSTRAINT "Issue_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "VerificationToken" (
+    "identifier" STRING NOT NULL,
+    "token" STRING NOT NULL,
+    "expires" TIMESTAMP(3) NOT NULL
+);
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Account_provider_providerAccountId_key" ON "Account"("provider", "providerAccountId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Session_sessionToken_key" ON "Session"("sessionToken");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "VerificationToken_token_key" ON "VerificationToken"("token");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "VerificationToken_identifier_token_key" ON "VerificationToken"("identifier", "token");
+
+-- AddForeignKey
+ALTER TABLE "Account" ADD CONSTRAINT "Account_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Session" ADD CONSTRAINT "Session_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Team" ADD CONSTRAINT "Team_leadMemberId_fkey" FOREIGN KEY ("leadMemberId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Project" ADD CONSTRAINT "Project_teamId_fkey" FOREIGN KEY ("teamId") REFERENCES "Team"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Project" ADD CONSTRAINT "Project_ownerId_fkey" FOREIGN KEY ("ownerId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Sprint" ADD CONSTRAINT "Sprint_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "Project"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Issue" ADD CONSTRAINT "Issue_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "Project"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Issue" ADD CONSTRAINT "Issue_sprintId_fkey" FOREIGN KEY ("sprintId") REFERENCES "Sprint"("id") ON DELETE SET NULL ON UPDATE CASCADE;

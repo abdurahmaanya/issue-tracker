@@ -1,16 +1,24 @@
-import { signOut } from "next-auth/react";
 import Link from "next/link";
 
-export default function MainNavbar(){
+export default function NavItem(){
     return (
         <div>
             <nav className="bg-gray-800 shadow">
                 <div className="items-center justify-center space-y-8 md:flex md:space-x-6 md:space-y-0">
                     <li className="text-white">
-                        <Link href="/profile">Profile</Link>
+                        <Link href="/">Home</Link>
                     </li>
                     <li className="text-white">
-                        <Link href="/issues">Issues</Link>
+                        <Link href="/projects">Projects</Link>
+                    </li>
+                    <li className="text-white">
+                        <Link href="/teams">Teams</Link>
+                    </li>
+                    <li className="text-white">
+                        <Link href="/backlog">Backlog</Link>
+                    </li>
+                    <li className="text-white">
+                        <Link href="/board">Board</Link>
                     </li>
                     <li className="text-white">
                         <Link href="/logout">Logout</Link>

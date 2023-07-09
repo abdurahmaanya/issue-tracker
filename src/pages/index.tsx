@@ -1,18 +1,34 @@
+'use client'
 import { signIn, useSession } from "next-auth/react";
 import Header from "~/components/header";
-
-import MainNavbar from "~/components/mainNavbar";
+import NavItem from "~/components/navItem";
+import Image, { type ImageLoader } from 'next/image'
 
 export default function Home() {
-
-  const { data: sessionData } = useSession();
-  
-  if(sessionData != null){
+  const session = useSession();
+  const imageLoader:ImageLoader = ({ src, width, quality }) => {
+    return `${src}?w=${width}&q=${quality || 75}`
+  }  
+  if(session.data != null){
     return (
       <>
        <Header/>
         <main>
-          <MainNavbar />
+        <div>
+            <NavItem />
+            { 
+              session.data?.user.image &&
+              <Image
+                loader={imageLoader}
+                src={session.data?.user.image}
+                alt="Profile picture of the user"
+                width={100}
+                height={100}
+              />
+            }
+            <h1>username: {session.data?.user.name}</h1>
+            <h1>email: {session.data?.user.email}</h1>
+          </div>
         </main> 
       </>
     );

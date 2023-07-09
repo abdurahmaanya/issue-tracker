@@ -1,14 +1,14 @@
-import MainNavbar from "~/components/mainNavbar";
 import Header from "~/components/header";
+import NavItem from "~/components/navItem";
 
-export default function Issues() {
+export default function Teams() {
     return (
       <>
         <Header />
         <main>
           <div>
-            <MainNavbar />
-            <h1>issues</h1>
+            <NavItem />
+            <h1>teams</h1>
           </div>
         </main>
       </>

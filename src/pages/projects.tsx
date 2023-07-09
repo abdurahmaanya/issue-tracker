@@ -1,14 +1,14 @@
 import Header from "~/components/header";
-import MainNavbar from "~/components/mainNavbar";
+import NavItem from "~/components/navItem";
 
-export default function Profile() {
+export default function Projects() {
     return (
       <>
         <Header />
         <main>
           <div>
-            <MainNavbar />
-            <h1>profile</h1>
+            <NavItem />
+            <h1>projects</h1>
           </div>
         </main>
       </>
