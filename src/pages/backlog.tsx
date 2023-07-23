@@ -5,7 +5,7 @@ import { type Issue } from "~/types/issue";
 import { useEffect, useState } from "react";
 import { api } from '../utils/api';
 import { useRouter } from "next/router";
-import IssueCards from "~/components/issueCards";
+import IssueCard from "~/components/issueCard";
 
 type IssueForm = {
   issueType: "Bug" | "Task"
@@ -57,7 +57,9 @@ const Backlog = () => {
         <div>
           <MainNavbar />
           <div style={{ height: 600, width: '100%' }}>
-            <IssueCards issues={issues} />
+            {issues.flatMap((issue) => (
+              <IssueCard issue={issue} />
+            ))}
           </div>
           <form onSubmit={(event) => { void handleSubmit(onSubmit)(event) }}>
             {/* register your input into the hook by invoking the "register" function */}
@@ -71,7 +73,6 @@ const Backlog = () => {
           </form>
         </div>
       </main>
-
     </>
   );
 }
