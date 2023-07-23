@@ -3,11 +3,12 @@ import {
     createTRPCRouter,
     protectedProcedure,
 } from "~/server/api/trpc";
+import { type Sprint } from "~/types/sprint";
 
 export const sprintRouter = createTRPCRouter({
-    getALl: protectedProcedure.query(({ ctx }) => {
-        return ctx.prisma.sprint.findMany();
-    }),
+    getAll: protectedProcedure.query(({ ctx }) => {
+        return ctx.prisma.sprint.findMany() as unknown as Sprint[];
+      }),
 
     getById: protectedProcedure
         .input(z.object({ id: z.number() }))
@@ -22,7 +23,6 @@ export const sprintRouter = createTRPCRouter({
     create: protectedProcedure
         .input(z.object({
             data: z.object({
-                name: z.string(),
                 projectId: z.number()
             })
         }))
