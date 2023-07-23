@@ -9,12 +9,6 @@ export default function NavItem(){
                         <Link href="/">Home</Link>
                     </li>
                     <li className="text-white">
-                        <Link href="/projects">Projects</Link>
-                    </li>
-                    <li className="text-white">
-                        <Link href="/teams">Teams</Link>
-                    </li>
-                    <li className="text-white">
                         <Link href="/backlog">Backlog</Link>
                     </li>
                     <li className="text-white">

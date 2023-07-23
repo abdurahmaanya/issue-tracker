@@ -77,26 +77,39 @@ const Backlog = () => {
     <>
       <Header />
       <main>
-        <div className='app'>
+        <div>
           <MainNavbar />
           {/* sprints */}
-          <div className='app' style={{ height: 500, width: '100%' }}>
+          <div className="max-h-96 overflow-y-auto border border-gray-300 p-4"
+            style={{ margin: 20}}>
             {sprints.flatMap((sprint) => (
-              <div className='app'>
+              <div key={sprint?.id} className="border border-gray-300 p-4">
                 <SprintCard sprint={sprint} />
               </div>
             ))}
           </div>
+          
           {/* backlog issues */}
-          <div className='app' style={{ height: 200, width: '100%' }}>
+          <div className="max-h-60 overflow-y-auto border border-gray-300 p-4"
+            style={{ margin: 20 }}>
             {issues.flatMap((issue) => (
-              <div className='app'>
+              <div key={issue?.id} className="p-1 border border-gray-300">
                 <IssueCard issue={issue} />
               </div>
             ))}
           </div>
           {/* issue and sprint submit forms*/}
-          <div className='app' style={{ height: 100, width: '100%' }}>
+          <div style={{ height: '%10', width: '100%' }}>
+            {/* sprint submit form */}
+            <form onSubmit={(event) => { void handleSprintSubmit(onSprintSubmit)(event) }}>
+              <button type="submit" disabled={issueMutation.isLoading}
+                className="bg-gray-100 hover:bg-gray-400 text-gray-800 font-bold py-2 px-1 inline-flex items-center"
+                style={{ float: "right", marginRight: 20 }}>
+                Create sprint
+              </button>
+            </form>
+          </div>
+          <div style={{ marginLeft: 20 }}>
             {/* issue submit form */}
             <form onSubmit={(event) => { void handleSubmit(onIssueSubmit)(event) }}>
               <select id="issueTypes" {...register("issueType", { required: true })}>
@@ -104,11 +117,10 @@ const Backlog = () => {
                 <option value="Task">Task</option>
               </select>
               <input placeholder="title" {...register("title", { required: true })} />
-              <button type="submit" disabled={issueMutation.isLoading}>Create sprint</button>
-            </form>
-            {/* sprint submit form */}
-            <form onSubmit={(event) => { void handleSprintSubmit(onSprintSubmit)(event) }}>
-              <button type="submit" disabled={issueMutation.isLoading}>+ Create issue</button>
+              <button type="submit" disabled={issueMutation.isLoading}
+                className="bg-gray-100 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 inline-flex items-center">
+                + Create issue
+              </button>
             </form>
           </div>
         </div>
@@ -116,5 +128,4 @@ const Backlog = () => {
     </>
   );
 }
-
 export default Backlog;
