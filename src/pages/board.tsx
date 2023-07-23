@@ -8,7 +8,6 @@ export default function Board() {
       <main>
         <div>
           <NavItem />
-          <h1>board</h1>
         </div>
       </main>
     </>

@@ -61,7 +61,7 @@ model User {
 }
 
 model Team {
-    id            BigInt    @id @default(autoincrement())
+    id            Int    @id @default(sequence())
     name          String   
     projects      Project[]
     leadMember    User     @relation(fields: [leadMemberId], references: [id], onDelete: Cascade)
@@ -69,38 +69,38 @@ model Team {
 }
 
 model Project {
-    id            BigInt    @id @default(autoincrement())
+    id            Int    @id @default(sequence())
     name          String   
     isPersonal    Boolean      @default(true)
     sprints       Sprint[]
     issues        Issue[]
     team          Team?      @relation(fields: [teamId], references: [id])
-    teamId        BigInt?
+    teamId        Int?
     owner         User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
     ownerId       String
 }
 
 model Sprint{
-    id            BigInt    @id @default(autoincrement())
+    id            Int    @id @default(sequence())
     startsAt      DateTime?
     finishesAt    DateTime?
     goal          String?
     project       Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
-    projectId     BigInt
+    projectId     Int
     issues        Issue[]
     status        Status    @default(TODO)
 }
 
 model Issue{
-    id            BigInt    @id @default(autoincrement())
+    id            Int    @id @default(sequence())
     title         String
     issueType     IssueType @default(Bug)
     description   String?
     assignee      String?
     project       Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
-    projectId     BigInt
+    projectId     Int
     sprint        Sprint?     @relation(fields: [sprintId], references: [id])
-    sprintId      BigInt?
+    sprintId      Int?
     createdAt     DateTime   @default(now())
     updatedAt     DateTime?  @updatedAt
     closedAt      DateTime?

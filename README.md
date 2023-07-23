@@ -1,4 +1,4 @@
-# A project management app for managing tasks and tracking staff performance.
+# An app for managing tasks and tracking staff performance (JIRA clone).
 
 Do not forget to create .env file by copying .env.example and to assign values to NEXTAUTH_SECRET, DISCORD_CLIENT_ID and DISCORD_CLIENT_SECRET variables. 
 

@@ -1,6 +1,0 @@
--- AlterTable
-ALTER TABLE "Issue" ALTER COLUMN "issueType" SET DEFAULT 'Bug';
-ALTER TABLE "Issue" ALTER COLUMN "status" SET DEFAULT 'TODO';
-
--- AlterTable
-ALTER TABLE "Sprint" ALTER COLUMN "status" SET DEFAULT 'TODO';
