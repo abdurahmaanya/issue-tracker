@@ -4,10 +4,11 @@
 generator client {
     provider = "prisma-client-js"
     previewFeatures = ["jsonProtocol"]
+    binaryTargets = ["linux-musl-openssl-3.0.x", "windows"]
 }
 
 datasource db {
-    provider = "cockroachdb"
+    provider = "sqlite"
     // NOTE: When using mysql or sqlserver, uncomment the @db.Text annotations in model Account below
     // Further reading:
     // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
@@ -61,7 +62,7 @@ model User {
 }
 
 model Team {
-    id            Int    @id @default(sequence())
+    id            Int    @id @default(autoincrement())
     name          String   
     projects      Project[]
     leadMember    User     @relation(fields: [leadMemberId], references: [id], onDelete: Cascade)
@@ -69,7 +70,7 @@ model Team {
 }
 
 model Project {
-    id            Int    @id @default(sequence())
+    id            Int    @id @default(autoincrement())
     name          String   
     isPersonal    Boolean      @default(true)
     sprints       Sprint[]
@@ -81,20 +82,20 @@ model Project {
 }
 
 model Sprint{
-    id            Int    @id @default(sequence())
+    id            Int    @id @default(autoincrement())
     startsAt      DateTime?
     finishesAt    DateTime?
     goal          String?
     project       Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
     projectId     Int
     issues        Issue[]
-    status        Status    @default(TODO)
+    status        String    @default("TODO")
 }
 
 model Issue{
-    id            Int    @id @default(sequence())
+    id            Int    @id @default(autoincrement())
     title         String
-    issueType     IssueType @default(Bug)
+    issueType     String @default("Bug")
     description   String?
     assignee      String?
     project       Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
@@ -104,7 +105,7 @@ model Issue{
     createdAt     DateTime   @default(now())
     updatedAt     DateTime?  @updatedAt
     closedAt      DateTime?
-    status        Status    @default(TODO)
+    status        String    @default("TODO")
 }
 
 model VerificationToken {
@@ -115,13 +116,3 @@ model VerificationToken {
     @@unique([identifier, token])
 }
 
-enum IssueType{
-    Bug
-    Task
-}
-
-enum Status{
-    TODO
-    INPROGRESS
-    DONE
-}

@@ -1,0 +1,13 @@
+.column
+{
+    height: 95vh;
+    max-height: 95vh;
+    background-color: #0e0f0f;
+    width: 33%;
+}
+.columnContent
+{
+    height: 90vh;
+    max-height: 90vh;
+    overflow-y: scroll;
+}
