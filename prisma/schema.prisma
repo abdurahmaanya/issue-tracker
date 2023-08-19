@@ -71,7 +71,7 @@ model Team {
 
 model Project {
     id            Int    @id @default(autoincrement())
-    name          String   
+    name          String  @unique
     isPersonal    Boolean      @default(true)
     sprints       Sprint[]
     issues        Issue[]
