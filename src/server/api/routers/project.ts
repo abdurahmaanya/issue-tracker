@@ -3,17 +3,17 @@ import {
     createTRPCRouter,
     protectedProcedure,
 } from "~/server/api/trpc";
-import { type Sprint } from "@prisma/client";
+import { type Project } from "@prisma/client";
 
-export const sprintRouter = createTRPCRouter({
+export const projectRouter = createTRPCRouter({
     getAll: protectedProcedure.query(({ ctx }) => {
-        return ctx.prisma.sprint.findMany() as unknown as Sprint[];
-      }),
+        return ctx.prisma.project.findMany() as unknown as Project[];
+    }),
 
     getById: protectedProcedure
         .input(z.object({ id: z.number() }))
         .query(({ ctx, input }) => {
-            return ctx.prisma.sprint.findUnique({
+            return ctx.prisma.project.findUnique({
                 where: {
                     id: input.id,
                 },
@@ -23,12 +23,15 @@ export const sprintRouter = createTRPCRouter({
     create: protectedProcedure
         .input(z.object({
             data: z.object({
-                projectId: z.number()
+                name: z.string(),
+                ownerId: z.string(),
+                teamId: z.number().optional(),
+                isPersonal: z.boolean().optional(),
             })
         }))
         .mutation(({ ctx, input }) => {
-            return ctx.prisma.sprint.create({
-                data: input.data as unknown as Sprint,
+            return ctx.prisma.project.create({
+                data: input.data as unknown as Project,
             });
         }),
 
@@ -36,15 +39,13 @@ export const sprintRouter = createTRPCRouter({
         .input(z.object({
             id: z.number(), data: z.object({
                 name: z.string(),
-                startDate: z.date(),
-                endDate: z.date(),
-                projectId: z.number(),
-                status: z.enum(["TODO", "INPROGRESS", "DONE"]),
-                goal: z.string()
+                ownerId: z.string(),
+                teamId: z.number().optional(),
+                isPersonal: z.boolean().optional(),
             })
         }))
         .mutation(({ ctx, input }) => {
-            return ctx.prisma.sprint.update({
+            return ctx.prisma.project.update({
                 where: {
                     id: input.id,
                 },
@@ -55,7 +56,7 @@ export const sprintRouter = createTRPCRouter({
     delete: protectedProcedure
         .input(z.object({ id: z.number() }))
         .mutation(({ ctx, input }) => {
-            return ctx.prisma.sprint.delete({
+            return ctx.prisma.project.delete({
                 where: {
                     id: input.id,
                 },

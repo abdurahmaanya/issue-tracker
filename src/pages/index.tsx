@@ -2,41 +2,80 @@
 import { signIn, useSession } from "next-auth/react";
 import Header from "~/components/header";
 import NavItem from "~/components/navItem";
-import Image, { type ImageLoader } from 'next/image'
+import { api } from "~/utils/api";
+import { useEffect, useState } from "react";
+import ProjectCard from "~/components/projectCard";
+import { type Project } from "@prisma/client";
+import { useForm, type SubmitHandler } from "react-hook-form";
+import router from "next/router";
+
+type ProjectForm = {
+  name: string;
+};
 
 export default function Home() {
   const session = useSession();
-  const imageLoader:ImageLoader = ({ src, width, quality }) => {
-    return `${src}?w=${width}&q=${quality || 75}`
-  }  
-  if(session.data != null){
+  const [projects, setProjects] = useState<Project[]>([]);
+  const projectsQuery = api.project.getAll.useQuery();
+  useEffect(() => {
+    setProjects(projectsQuery.data?.filter(i => i.ownerId == session?.data?.user?.id) ?? []);
+  }, [projectsQuery.data, session?.data?.user?.id]);
+  const {
+    register,
+    handleSubmit
+  } = useForm<ProjectForm>()
+  const projectCreateMutation = api.project.create.useMutation();
+  const onProjectSubmit: SubmitHandler<ProjectForm> = async (projectFrom: ProjectForm, event) => {
+    event?.preventDefault();
+    try {
+      const projectData = {
+        name: projectFrom.name,
+        ownerId: session?.data?.user?.id
+      };
+      await projectCreateMutation.mutateAsync({
+        data: projectData
+      });
+    } catch (error) {
+      console.log("Error submitting project form:", error);
+    }
+    void router.reload();
+  };
+  
+  if (session?.data != null) {
+    const handleProjectClick = (project: Project) => () => {
+      localStorage.setItem("selectedProjectId", project?.id.toString())
+      void router.push('/backlog');
+    };
     return (
       <>
-       <Header/>
+        <Header />
         <main>
-        <div>
+          <div>
             <NavItem />
-            { 
-              session.data?.user.image &&
-              <Image
-                loader={imageLoader}
-                src={session.data?.user.image}
-                alt="Profile picture of the user"
-                width={100}
-                height={100}
-              />
-            }
-            <h1>username: {session.data?.user.name}</h1>
-            <h1>email: {session.data?.user.email}</h1>
+            {/* project submit form */}
+            <div style={{ marginLeft: 20, marginTop: 20 }}>
+              <form onSubmit={(event) => { void handleSubmit(onProjectSubmit)(event) }}>
+                <input placeholder="name" {...register("name", { required: true })} />
+                <button type="submit" disabled={projectCreateMutation.isLoading}
+                  className="bg-gray-100 hover:bg-gray-400 text-gray-800 font-bold py-2 px-1">
+                  Create Project
+                </button>
+              </form>
+            </div>
+            {projects.flatMap((project) => (
+              <div key={project.id} onClick={handleProjectClick(project)}>
+                <ProjectCard project={project} />
+              </div>
+            ))}
           </div>
-        </main> 
+        </main>
       </>
-    );
+    )
   }
-  else{
-    return(
+  else {
+    return (
       <>
-        <Header/>
+        <Header />
         <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
           <div className="flex flex-col items-center justify-center gap-4">
             <button

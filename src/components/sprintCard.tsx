@@ -11,7 +11,6 @@ export default function SprintCard(props: { sprint: Sprint }) {
     const issuesQuery = api.issue.getAll.useQuery();
     const [sprintIssues, setSprintIssues] = useState<Issue[]>([]);
 
-
     useEffect(() => {
       const sprintIssues = issuesQuery.data?.filter(i=>i.sprintId == props.sprint.id) ?? [];
       setSprintIssues(sprintIssues);

@@ -1,6 +1,7 @@
 .sprints
 {
     max-height: 300px;
+    height: 300px;
     overflow-y: scroll;
     background-color: #0e0f0f;
 }

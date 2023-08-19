@@ -1,4 +1,3 @@
-import MainNavbar from "~/components/navItem";
 import Header from "~/components/header";
 import { type SubmitHandler, useForm } from "react-hook-form";
 import { type Issue } from "@prisma/client";
@@ -11,6 +10,7 @@ import SprintCard from "~/components/sprintCard";
 import { Droppable } from "react-beautiful-dnd";
 import backlogStyles from "~/styles/backlog.module.css";
 import sprintStyles from "~/styles/sprints.module.css";
+import ProjectNavItem from "~/components/projectNavItem";
 
 type IssueForm = {
   issueType: string
@@ -18,14 +18,17 @@ type IssueForm = {
 }
 
 const Backlog = () => {
+  const [selectedProjectId, setSelectedProjectId] = useState<number>();
+  useEffect(() => {
+    setSelectedProjectId(parseInt(window.localStorage.getItem("selectedProjectId")));
+  }, []);
   const router = useRouter();
-
   // issue query and submit form
   const issuesQuery = api.issue.getAll.useQuery();
   const [backlogIssues, setIssues] = useState<Issue[]>([]);
   useEffect(() => {
-    setIssues(issuesQuery.data?.filter(i => i.sprintId == null) ?? []);
-  }, [issuesQuery.data]);
+    setIssues(issuesQuery.data?.filter(i => i.sprintId == null && i.projectId == selectedProjectId) ?? []);
+  }, [issuesQuery.data, selectedProjectId]);
   const {
     register,
     handleSubmit
@@ -37,25 +40,26 @@ const Backlog = () => {
       const issueData = {
         title: issueFrom.title,
         issueType: issueFrom.issueType,
-        projectId: 0,
+        projectId: selectedProjectId,
         createdAt: new Date(),
         status: "TODO",
       };
+      console.log('issue data. Selected project -> ', issueData);
       await issueCreateMutation.mutateAsync({
         data: issueData
       });
     } catch (error) {
       console.log("Error submitting issue form:", error);
     }
-    router.reload();
+    void router.reload();
   };
 
   // sprint query and submit form
   const sprintsQuery = api.sprint.getAll.useQuery();
   const [sprints, setSprints] = useState<Sprint[]>([]);
   useEffect(() => {
-    setSprints(sprintsQuery.data ?? []);
-  }, [sprintsQuery.data]);
+    setSprints(sprintsQuery.data?.filter(s => s.projectId == selectedProjectId) ?? []);
+  }, [selectedProjectId, sprintsQuery.data]);
   const {
     handleSubmit: handleSprintSubmit
   } = useForm();
@@ -65,13 +69,13 @@ const Backlog = () => {
     try {
       await sprintMutation.mutateAsync({
         data: {
-          projectId: 0,
+          projectId: selectedProjectId,
         }
       });
     } catch (error) {
       console.log("Error submitting form:", error);
     }
-    router.reload();
+    void router.reload();
   };
 
   return (
@@ -79,8 +83,9 @@ const Backlog = () => {
       <Header />
       <main>
         <div>
-          <MainNavbar />
+          <ProjectNavItem />
           {/* sprints */}
+          <p className="font-bold text-xl mb-2" style={{ marginLeft: 20 }}>Sprints</p>
           <div className={sprintStyles.sprints}
             style={{ marginLeft: 20 }}>
             {sprints.flatMap((sprint) => (
@@ -93,13 +98,13 @@ const Backlog = () => {
           <form onSubmit={(event) => { void handleSprintSubmit(onSprintSubmit)(event) }}>
             <button type="submit" disabled={issueCreateMutation.isLoading}
               className="bg-gray-100 hover:bg-gray-400 text-gray-800 font-bold py-2 px-1"
-              style={{ top: '43%', right: 0, position: "absolute", marginRight: 20 }}
+              style={{ marginLeft: '93%' }}
             >
               Create sprint
             </button>
           </form>
-          <p className="font-bold text-xl mb-2" style={{ marginLeft: 20 }}>Backlog</p>
           {/*  backlog issues*/}
+          <p className="font-bold text-xl mb-2" style={{ marginLeft: 20 }}>Backlog</p>
           <div className={backlogStyles.backlog}
             style={{ marginLeft: 20 }}>
             <Droppable droppableId="backlog">

@@ -25,6 +25,7 @@
     "react-beautiful-dnd": "^13.1.1",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.45.1",
+    "react-hooks-global-state": "^2.1.0",
     "superjson": "1.12.2",
     "zod": "^3.21.4"
   },

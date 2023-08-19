@@ -11,8 +11,10 @@ const MyApp: AppType<{ session: Session | null }> = ({
   Component,
   pageProps: { session, ...pageProps },
 }) => {
+  // issue update mutation
   const issueUpdateMutation = api.issue.update.useMutation();
 
+  // issue update
   const handleIssueUpdate = (updatedIssue: Issue) => {
     try {
       issueUpdateMutation.mutate({
@@ -85,13 +87,13 @@ const MyApp: AppType<{ session: Session | null }> = ({
     // Reload the page after the mutation
     window.location.reload();
   };
-
+  
   return (
-    <DragDropContext onDragEnd={onDragEnd}>
-      <SessionProvider session={session}>
-        <Component {...pageProps} />
-      </SessionProvider>
-    </DragDropContext>
+      <DragDropContext onDragEnd={onDragEnd}>
+        <SessionProvider session={session}>
+          <Component {...pageProps} />
+        </SessionProvider>
+      </DragDropContext>
   );
 };
 
